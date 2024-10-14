@@ -1,0 +1,85 @@
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration _configuration
+@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+
+    <title>@ViewData["Title"] - ACM</title>
+    <link rel="apple-touch-icon" href="/img/LogoOnly.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CQuicksand:300,400,500,700" rel="stylesheet">
+
+    <!-- BEGIN: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/weather-icons/climacons.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/fonts/meteocons/style.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/morris.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/chartist.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/chartist-plugin-tooltip.css">
+    <!-- END: Vendor CSS-->
+    <!-- BEGIN: Theme CSS-->
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link href="~/lib/chosen/chosen.min.css" rel="stylesheet" />
+    <link href="~/lib//fontawesome-free-5.11.2/css/all.min.css" rel="stylesheet">
+    <link href="~/lib/fontawesome-free-5.11.2/css/brands.css" rel="stylesheet" />
+    <!-- END: Theme CSS-->
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu-modern.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/colors/palette-gradient.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/fonts/simple-line-icons/style.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/colors/palette-gradient.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/timeline.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-ecommerce.css">
+    <!-- END: Page CSS-->
+
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    @{
+        var principal = User as ClaimsPrincipal;
+        var check = User.Identity.IsAuthenticated;
+        var displayName = "";
+        var emailAddress = "";
+        var UserID = "";
+
+        if (check)
+        {
+            displayName = principal.Claims.Where(x => x.Type == ClaimTypes.Name).First().Value;
+            UserID = principal.Claims.Where(x => x.Type == "http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/UserID").First().Value;
+
+            if (principal.Claims.Any(x => x.Type == ClaimTypes.Email))
+            {
+                emailAddress = principal.Claims.Where(x => x.Type == ClaimTypes.Email).First().Value;
+            }
+        }
+    }
+    <div>
+        @RenderBody()
+    </div>
+
+    <!-- END: Footer-->
+    <!-- BEGIN: Vendor JS-->
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
+    <!-- BEGIN Vendor JS-->
+    @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
+    <script src="~/lib/vue2/vue.min.js"></script>
+    <script src="~/lib/bootbox/bootbox.min.js"></script>
+    <script src="~/lib/lodash/lodash.min.js"></script>
+    <script src="~/lib/jQuery-Autocomplete/dist/jquery.autocomplete.min.js"></script>
+    <script src="~/lib/chosen/chosen.jquery.min.js"></script>
+
+
+    <!-- END: Theme JS-->
+
+    @RenderSection("Scripts", required: false)
+
+    <ejs-scripts></ejs-scripts>
+</body>
+</html>

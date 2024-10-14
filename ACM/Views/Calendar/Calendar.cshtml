@@ -1,0 +1,585 @@
+﻿@model ACM.ViewModels.CalendarViewModelFactory.CalendarViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = Localizer[PublicEnums.LocalizationKeys.Calendar];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.MenuTab = "menu-calendar";
+    ViewBag.MenuSubTab = "";
+}
+
+@section Scripts
+    {
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/calendars/fullcalendar.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/calendars/daygrid.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/calendars/timegrid.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/plugins/calendars/fullcalendar.css">
+
+    <link href="~/app-assets/vendors/css/pickers/miniColors/jquery.minicolors.min.css" rel="stylesheet" />
+    <script src="~/app-assets/vendors/js/pickers/miniColors/jquery.minicolors.min.js"></script>
+
+    <script src="~/lib/moment/min/moment.min.js"></script>
+    <link href="~/lib/pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <script src="~/lib/pc-bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/lib/vue-bootstrap-datetimepicker/dist/vue-bootstrap-datetimepicker.min.js"></script>
+
+    <script src="~/app-assets/vendors/js/extensions/fullcalendar.min.js"></script>
+    <script src="~/app-assets/vendors/js/extensions/daygrid.min.js"></script>
+    <script src="~/app-assets/vendors/js/extensions/timegrid.min.js"></script>
+    <script src="~/app-assets/vendors/js/extensions/interactions.min.js"></script>
+    <script src="~/app-assets/js/core/libraries/jquery_ui/jquery-ui.min.js"></script>
+
+    <script type="text/javascript">
+        var timerId = null;
+        var pageModel = @Json.Serialize(Model);
+
+        var Calendar = FullCalendar.Calendar;
+        var Draggable = FullCalendarInteraction.Draggable;
+
+        var containerEl = document.getElementById('external-events');
+        var calendarEl = document.getElementById('fc-external-drag');
+
+        $(function () {
+
+            App.BaseFunctions.UnbindLoading();
+
+            jQuery.extend(true, jQuery.fn.datetimepicker.defaults, {
+                icons: {
+                    time: 'far fa-clock',
+                    date: 'far fa-calendar',
+                    up: 'fas fa-arrow-up',
+                    down: 'fas fa-arrow-down',
+                    previous: 'fas fa-chevron-left',
+                    next: 'fas fa-chevron-right',
+                    today: 'fas fa-calendar-check',
+                    clear: 'far fa-trash-alt',
+                    close: 'far fa-times-circle'
+                }
+            });
+
+            $("#NewTypeColorCode").minicolors({ theme: "bootstrap" });
+        });
+
+        Vue.component('date-picker', VueBootstrapDatetimePicker);
+
+        Vue.filter('formatDateTime', function (value) {
+            if (value) {
+                return moment(String(value)).format('YYYY/MM/DD hh:mm:ss A')
+            }
+        });
+
+        var detailsApp = new Vue({
+            el: '#mainApp',
+            data: {
+                errors: [],
+                messages: [],
+                model: pageModel,
+                NewTypeCalendarEventTypeID: "@Guid.Empty",
+                NewTypeDescription: "",
+                NewTypeMetaFields: [],
+                eventTypeDraggable: null,
+                calendar: null,
+                allowCalendatUpdate: false,
+                selectedCalendarEvent: {
+                    eventID: null,
+                    eventData: {}
+                },
+                dateConfig: {
+                    format: 'YYYY/MM/DD hh:mm a',
+                    useCurrent: false,
+                    showClear: true,
+                    showClose: false,
+                },
+                dateConfigDay: {
+                    format: 'YYYY/MM/DD',
+                    useCurrent: false,
+                    showClear: true,
+                    showClose: false,
+                }
+            },
+            methods: {
+                LoadModel: function () {
+                    var self = this;
+
+                    var postModel = {
+                        CalendarDateFrom: self.model.calendarDateFrom,
+                        CalendarDateTo: self.model.calendarDateTo
+                    };
+
+                    $.post("/Calendar/ReloadCalendar", postModel, function (response) {
+                        if (response.result) {
+                            self.$data.model = response.data;
+                        }
+                        else {
+                            self.$data.messages = [];
+                            self.$data.errors = [];
+                            self.$data.errors.push({ description: response.message });
+                        }
+                    });
+                },
+                RemoveNewMetaField: function (metaIndex) {
+                    this.NewTypeMetaFields[metaIndex].isRemoved = true;
+                },
+                AddNewMetafield: function () {
+                    this.NewTypeMetaFields.push({ description: "", calendarEventTypeMetaFieldID: "@Guid.Empty", isRemoved: false})
+                },
+                RemoveEventType: function (type, typeindex) {
+                    var self = this;
+                    $.post("/Calendar/RemoveCalendarEventType", { CalendarEventTypeID: type.calendarEventTypeID }, function (response) {
+                        if (response.result) {
+                            self.LoadModel();
+                        }
+                        else {
+                            self.$data.messages = [];
+                            self.$data.errors = [];
+                            self.$data.errors.push({ description: response.message });
+                        }
+                    });
+                },
+                EditEventType: function (type, typeindex) {
+                    var self = this;
+
+                    self.NewTypeCalendarEventTypeID = type.calendarEventTypeID;
+                    self.NewTypeDescription = type.description;
+                    self.NewTypeMetaFields = type.metaFields;
+
+                    $("#modal_AddEventType").modal("show");
+                    $("#NewTypeColorCode").minicolors("value", type.colorCode);
+                },
+                UpdateEventTypeButtonOnClick: function () {
+                    var self = this;
+
+                    if (self.model.eventTypeList == null) {
+                        self.model.eventTypeList = [];
+                    }
+
+                    var newItem = {
+                        calendarEventTypeID: self.NewTypeCalendarEventTypeID,
+                        description: self.NewTypeDescription,
+                        colorCode: $("#NewTypeColorCode").val(),
+                        metaFields: self.NewTypeMetaFields
+                    };
+
+                    self.NewTypeDescription = "";
+                    $("#NewTypeColorCode").val("");
+                    self.NewTypeMetaFields = [];
+                    self.NewTypeCalendarEventTypeID = "@Guid.Empty";
+
+                    //save event types
+                    $.post("/Calendar/UpdateCalendarEventType", newItem, function (response) {
+                        if (response.result) {
+                            self.LoadModel();
+                        }
+                        else {
+                            self.$data.messages = [];
+                            self.$data.errors = [];
+                            self.$data.errors.push({ description: response.message });
+                        }
+                    });
+                },
+                Settime: function () {
+                    var self = this;
+                    clearTimeout(timerId);
+                    timerId = setTimeout(
+                        function (d) {
+                            return self.LoadModel();
+                        },
+                        1500
+                    );
+                },
+                GetCalendarEventsFormatted: function () {
+                    var self = this;
+                    var response = [];
+
+                    for (var i = 0; i < self.model.calEventList.length; i++) {
+                        var calItem = self.model.calEventList[i];
+
+                        response.push({
+                            title: calItem.description,
+                            start: (calItem.isAllDay == false) ? calItem.startTime : new moment(calItem.startTime).format("YYYY-MM-DD"),
+                            end: (calItem.isAllDay == false) ? calItem.endTime : null,
+                            url: calItem.url,
+                            color: calItem.colorCode,
+                            id: calItem.calendarEventID,
+                            calendarEventID: calItem.calendarEventID,
+                            editable: calItem.allowEdit
+                        });
+                    }
+
+                    return response;
+                },
+                uuidv4: function() {
+                    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                    );
+                },
+                UpdateCalendarEvents: function () {
+                    var self = this;
+
+                    self.calendar.removeAllEvents();
+
+                    var events = self.GetCalendarEventsFormatted();
+
+                    for (var i = 0; i < events.length; i++) {
+                        self.calendar.addEvent(events[i]);
+                    }
+                },
+                GetEventData: function (event) {
+                    var self = this;
+                    var eventData = null;
+
+                    if (event.extendedProps.calendarEventID != undefined && event.extendedProps.calendarEventID != null) {
+                        eventData = $.grep(self.model.calEventList, function (item) {
+                            return item.calendarEventID == event.extendedProps.calendarEventID;
+                        })[0];
+
+                        eventData.startTime = (event.allDay) ? new moment(event.start).format("YYYY/MM/DD") : new moment(event.start).format("YYYY/MM/DD hh:mm a");
+                        eventData.isAllDay = event.allDay;
+                        eventData.endTime = (event.allDay) ? null : new moment(event.end).format("YYYY/MM/DD hh:mm a");
+                    }
+                    else {
+                        eventData = {
+                            url: event.url,
+                            startTime: (event.allDay) ? new moment(event.start).format("YYYY/MM/DD") : new moment(event.start).format("YYYY/MM/DD hh:mm a"),
+                            calendarEventID: "@Guid.Empty",
+                            calendarEventTypeID: event.extendedProps.calendarEventTypeID,
+                            colorCode: event.backgroundColor,
+                            description: event.title,
+                            endTime: (event.allDay) ? null : new moment(event.end).format("YYYY/MM/DD hh:mm a"),
+                            isAllDay: event.allDay,
+                            allowEdit: true,
+                            metaValues: [],
+                            editDateTime: new moment().toDate(),
+                            editUserDisplayName: "",
+                            enableReminder: true
+                        };
+
+                        var eventType = $.grep(self.model.eventTypeList, function (item) {
+                            return item.calendarEventTypeID.toUpperCase() == event.extendedProps.calendarEventTypeID.toUpperCase();
+                        })[0];
+
+                        for (var i = 0; i < eventType.metaFields.length; i++) {
+                            eventData.metaValues.push({
+                                calendarEventMetaFieldValueID: "@Guid.Empty",
+                                calendarEventTypeMetaFieldID: eventType.metaFields[i].calendarEventTypeMetaFieldID,
+                                metaDescription: eventType.metaFields[i].description,
+                                metaValue: ""
+                            });
+                        }
+                    }
+
+                    return eventData;
+                },
+                ShowEventEdit: function () {
+                    var self = this;
+
+                    self.allowCalendatUpdate = true;
+                    $("#modal_EventEdit").modal("show");
+                },
+                UpdateEventButtonOnClick: function () {
+                    var self = this;
+
+                    self.allowCalendatUpdate = true;
+                    self.UpdateEventSave(true);
+                },
+                UpdateEventSave: function (updateCalendar) {
+                    var self = this;
+                    if (self.allowCalendatUpdate == true) {
+                        $.post("/Calendar/UpdateCalendarEvent", self.selectedCalendarEvent.eventData, function (response) {
+                            if (response.result) {
+                                self.allowCalendatUpdate = false;
+                                self.LoadModel();
+                            }
+                            else {
+                                self.$data.messages = [];
+                                self.$data.errors = [];
+                                self.$data.errors.push({ description: response.message });
+                            }
+                        });
+                    }
+                },
+                DeleteEventButtonOnClick: function () {
+                    var self = this;
+                    $.post("/Calendar/DeleteCalendarEvent", { CalendarEventID: self.selectedCalendarEvent.eventData.calendarEventID }, function (response) {
+                        if (response.result) {
+                            self.LoadModel();
+                        }
+                        else {
+                            self.$data.messages = [];
+                            self.$data.errors = [];
+                            self.$data.errors.push({ description: response.message });
+                        }
+                    });
+                },
+                InitCalendar: function () {
+                    var self = this;
+
+                    self.calendar = new Calendar($("#fc-external-drag")[0], {
+                        header: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: "dayGridMonth,timeGridWeek,timeGridDay"
+                        },
+                        editable: true,
+                        eventLimit: true,
+                        plugins: ["dayGrid", "timeGrid", "interaction"],
+                        droppable: true, // this allows things to be dropped onto the calendar
+                        defaultDate: new moment().format("YYYY-MM-DD"),
+                        events: self.GetCalendarEventsFormatted(),
+                        eventReceive: function (info) {
+                            self.allowCalendatUpdate = true;
+                            self.selectedCalendarEvent.eventID = info.event.id;
+                            self.selectedCalendarEvent.eventData = self.GetEventData(info.event);
+                            self.UpdateEventSave(false);
+                        },
+                        eventResize: function (info) {
+                            self.allowCalendatUpdate = true;
+                            self.selectedCalendarEvent.eventID = info.event.id;
+                            self.selectedCalendarEvent.eventData = self.GetEventData(info.event);
+                            self.UpdateEventSave(false);
+                        },
+                        eventDrop: function (info) {
+                            self.allowCalendatUpdate = true;
+                            self.selectedCalendarEvent.eventID = info.event.id;
+                            self.selectedCalendarEvent.eventData = self.GetEventData(info.event);
+                            self.UpdateEventSave(false);
+                        },
+                        eventClick: function (info) {
+                            info.jsEvent.preventDefault();
+                            self.allowCalendatUpdate = true;
+                            self.selectedCalendarEvent.eventID = info.event.id;
+                            self.selectedCalendarEvent.eventData = self.GetEventData(info.event);
+                            self.ShowEventEdit();
+                        },
+                        datesRender: function (info) {
+                            self.model.calendarDateFrom = new moment(info.view.activeStart).format("YYYY/MM/DD hh:mm a");
+                            self.model.calendarDateTo = new moment(info.view.activeEnd).format("YYYY/MM/DD hh:mm a");
+                            self.LoadModel();
+                        }
+                    });
+                    self.calendar.render();
+                },
+                InitDraggble: function () {
+                    var self = this;
+                    self.eventTypeDraggable = new Draggable($("#external-events")[0], {
+                        itemSelector: '.fc-event',
+                        eventData: function (eventEl) {
+                            var index = $(eventEl).data("index");
+
+                            var eventType = detailsApp.model.eventTypeList[index];
+
+                            return {
+                                title: eventType.description,
+                                color: eventType.colorCode,
+                                calendarEventTypeID: eventType.calendarEventTypeID,
+                                id: self.uuidv4()
+                            };
+                        }
+                    });
+                }
+            },
+            watch: {
+                "model.calendarDateFrom": function (val) {
+                    this.Settime();
+                },
+                "model.calendarDateTo": function (val) {
+                    this.Settime();
+                },
+                "model.calEventList": function () {
+                    this.UpdateCalendarEvents();
+                }
+            },
+            mounted: function () {
+                this.InitCalendar();
+                this.InitDraggble();
+            },
+            beforeUpdate: function () {
+                var self = this;
+            },
+            updated: function () {
+                var self = this;
+            }
+        });
+    </script>
+}
+<div id="mainApp" v-cloak>
+    <div class="content-header row">
+        <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
+            <h3 class="content-header-title mb-0 d-inline-block">@Localizer[PublicEnums.LocalizationKeys.Calendar]</h3>
+            <div class="row breadcrumbs-top d-inline-block">
+                <div class="breadcrumb-wrapper col-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a>@Localizer[PublicEnums.LocalizationKeys.Home]</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            @Localizer[PublicEnums.LocalizationKeys.Calendar]
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-body">
+        <div class="card">
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(ViewBag.Error))
+                    {
+                        <div class="alert alert-danger mb-2" role="alert">
+                            <strong>@Localizer[PublicEnums.LocalizationKeys.Alert]!</strong> @ViewBag.Error
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(ViewBag.Success))
+                    {
+                        <div class="alert alert-success mb-2" role="alert">
+                            <strong>@Localizer[PublicEnums.LocalizationKeys.Success]!</strong> @ViewBag.Success
+                        </div>
+                    }
+                    <div v-if="errors.length > 0" v-for="(error, index) in errors" class="alert alert-danger mb-2" v-cloak>
+                        {{error.description}}
+                    </div>
+                    <div v-if="messages.length > 0" v-for="(message, index) in messages" class="alert alert-success mb-2" v-cloak>
+                        {{message.description}}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div id="external-events">
+                                <h4>@Localizer[PublicEnums.LocalizationKeys.Standard_Events]</h4>
+                                <div class="fc-events-container">
+                                    <div v-for="(type, typeindex) in model.eventTypeList" class='fc-event cursor-pointer' :data-index="typeindex" :data-id="type.calendarEventTypeID" :style='[{"background-color": type.colorCode}, {"border-color": type.colorCode}] '>
+                                        {{type.description}}
+                                        <i class="fa fa-trash float-right" v-on:click="RemoveEventType(type, typeindex)" style="margin-top:2px"></i>
+                                        <i class="fa fa-edit float-right" v-on:click="EditEventType(type, typeindex)" style="margin-top:2px;margin-right:4px"></i>
+                                    </div>
+                                </div>
+                                <div class="row pt-1">
+                                    <div class="col-md-12">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_AddEventType"><i class="la la-plus"></i> @Localizer[PublicEnums.LocalizationKeys.Add_Event_Type]</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div id='fc-external-drag'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal_AddEventType" class="modal" role="dialog" style="display:none">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Localizer[PublicEnums.LocalizationKeys.Event_Type]</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="NewTypeDescription">@Localizer[PublicEnums.LocalizationKeys.Description] </label>
+                        <input type="text" class="form-control" id="NewTypeDescription" v-model="NewTypeDescription">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewTypeColorCode">@Localizer[PublicEnums.LocalizationKeys.Color_Code] </label>
+                        <input type="text" class="form-control" id="NewTypeColorCode">
+                    </div>
+                    <h4>@Localizer[PublicEnums.LocalizationKeys.Meta_Fields]</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>@Localizer[PublicEnums.LocalizationKeys.Description]</th>
+                                <th>@Localizer[PublicEnums.LocalizationKeys.Remove]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(meta, metaIndex) in NewTypeMetaFields" v-if="meta.isRemoved == false">
+                                <td>
+                                    <input type="text" class="form-control" v-model="meta.description">
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" type="button" v-on:click="RemoveNewMetaField(metaIndex)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn btn-success btn-sm" type="button" v-on:click="AddNewMetafield()">@Localizer[PublicEnums.LocalizationKeys.Add_Meta_Field]</button>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" data-dismiss="modal" v-on:click="UpdateEventTypeButtonOnClick()">@Localizer[PublicEnums.LocalizationKeys.Save]</button>
+                    <button class="btn btn-default" data-dismiss="modal" type="button">@Localizer[PublicEnums.LocalizationKeys.Cancel]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal_EventEdit" class="modal" role="dialog" style="display:none">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Localizer[PublicEnums.LocalizationKeys.Calendar_Event]</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" v-if="selectedCalendarEvent.eventID != null">
+                    <div class="form-group">
+                        <label>@Localizer[PublicEnums.LocalizationKeys.Title]</label>
+                        <input type="text" :disabled="selectedCalendarEvent.eventData.allowEdit == false" class="form-control" v-model="selectedCalendarEvent.eventData.description">
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer[PublicEnums.LocalizationKeys.All_day_event]</label><br />
+                        <input type="checkbox" :disabled="selectedCalendarEvent.eventData.allowEdit == false" v-model="selectedCalendarEvent.eventData.isAllDay">
+                    </div>
+                    <div class="form-group" v-if="selectedCalendarEvent.eventData.isAllDay == false">
+                        <label>@Localizer[PublicEnums.LocalizationKeys.Start_Time]</label>
+                        <date-picker :disabled="selectedCalendarEvent.eventData.allowEdit == false" v-model="selectedCalendarEvent.eventData.startTime" class="form-control" :config="dateConfig"></date-picker>
+                    </div>
+                    <div class="form-group" v-if="selectedCalendarEvent.eventData.isAllDay == false">
+                        <label>@Localizer[PublicEnums.LocalizationKeys.End_Time]</label>
+                        <date-picker :disabled="selectedCalendarEvent.eventData.allowEdit == false" v-model="selectedCalendarEvent.eventData.endTime" class="form-control" :config="dateConfig"></date-picker>
+                    </div>
+                    <div class="form-group" v-if="selectedCalendarEvent.eventData.isAllDay == true">
+                        <label>@Localizer[PublicEnums.LocalizationKeys.Date]</label>
+                        <date-picker :disabled="selectedCalendarEvent.eventData.allowEdit == false" v-model="selectedCalendarEvent.eventData.startTime" class="form-control" :config="dateConfigDay"></date-picker>
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer[PublicEnums.LocalizationKeys.Url]</label>
+                        <input type="text" :disabled="selectedCalendarEvent.eventData.allowEdit == false" class="form-control" v-model="selectedCalendarEvent.eventData.url">
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer[PublicEnums.LocalizationKeys.Enable_Reminder]</label><br />
+                        <input type="checkbox" :disabled="selectedCalendarEvent.eventData.allowEdit == false" v-model="selectedCalendarEvent.eventData.enableReminder">
+                    </div>
+                    <div v-if="selectedCalendarEvent.eventData.metaValues.length > 0">
+                        <h4>@Localizer[PublicEnums.LocalizationKeys.Meta_Values]</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>@Localizer[PublicEnums.LocalizationKeys.Description]</th>
+                                    <th>@Localizer[PublicEnums.LocalizationKeys.Value]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(meta, metaIndex) in selectedCalendarEvent.eventData.metaValues">
+                                    <td>
+                                        {{meta.metaDescription}}
+                                    </td>
+                                    <td>
+                                        <input type="text" :disabled="selectedCalendarEvent.eventData.allowEdit == false" class="form-control" v-model="meta.metaValue">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" v-if="selectedCalendarEvent.eventData.allowEdit == true" data-dismiss="modal" v-on:click="UpdateEventButtonOnClick()">@Localizer[PublicEnums.LocalizationKeys.Save]</button>
+                    <button class="btn btn-danger" v-if="selectedCalendarEvent.eventData.allowEdit == true" data-dismiss="modal" v-on:click="DeleteEventButtonOnClick()">@Localizer[PublicEnums.LocalizationKeys.Remove]</button>
+                    <button class="btn btn-default" data-dismiss="modal" type="button">@Localizer[PublicEnums.LocalizationKeys.Cancel]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

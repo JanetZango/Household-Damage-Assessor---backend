@@ -1,0 +1,151 @@
+﻿@model ACM.ViewModels.Wallet.TransactionsViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = Localizer[PublicEnums.LocalizationKeys.Payment_Transactions];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts
+    {
+        <script src="~/lib/moment/min/moment.min.js"></script>
+    <link href="~/lib/pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <script src="~/lib/pc-bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/lib/vue-bootstrap-datetimepicker/dist/vue-bootstrap-datetimepicker.min.js"></script>
+    <script src="~/js/vue.cool-table.js"></script>
+    <script type="text/javascript">
+        var pageModel = @Json.Serialize(Model);
+        var timerId = null;
+
+        Vue.component(VueCoolTable.name, VueCoolTable);
+
+        Vue.filter('formatDateTime', function (value) {
+            if (value) {
+                return moment(String(value)).format('YYYY/MM/DD hh:mm:ss A')
+            }
+        });
+
+        var searchApp = new Vue({
+            el: '#vue-app',
+            data: {
+                errors: [],
+                messages: [],
+                model: pageModel,
+                headers: [
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Transaction_Date]', code: 'TransactionDate', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Item_Name]', code: 'ItemName', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Payment_Type]', code: 'PaymentType', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Transaction_Type]', code: 'TransactionType', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Amount_Gross]', code: 'AmountGross', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.PF_Payment_ID]', code: 'PFPaymentID', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.PF_Reference_ID]', code: 'PFReferenceID', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.PF_Payment_Status]', code: 'PFPaymentStatus', disableSorting: false },
+                    ]
+            },
+            methods: {
+                onPageChange: function (pagination) {
+                    this.ReloadModel(pagination);
+                },
+                ReloadModel: function (pagination, callback) {
+                    var self = this;
+
+                    var postModel = {
+                        Pagination: pagination,
+                    };
+
+                    self.$data.model.searchValue = self.$data.searchValue;
+                    $.post("/Payments/Transactions", postModel, function (response) {
+                        if (response.result) {
+                            self.$data.model = response.data;
+
+                            if (callback != null && callback != undefined) {
+                                callback();
+                            }
+                        }
+                        else {
+                            self.$data.messages = [];
+                            self.$data.errors = [];
+                            self.$data.errors.push({ description: response.message });
+                        }
+                    })
+                },
+                Settime: function (callback) {
+                    var self = this;
+                    clearTimeout(timerId);
+                    timerId = setTimeout(
+                        function (d) { return searchApp.ReloadModel(self.$data.model.pagination); },
+                        1500
+                    );
+                },
+            },
+
+            watch: {
+                
+            },
+            updated: function () {
+            },
+            beforeUpdate: function () {
+            }
+        });
+    </script>
+}
+<div id="vue-app">
+    <div class="content-header row">
+        <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
+            <h3 class="content-header-title mb-0 d-inline-block">@Localizer[PublicEnums.LocalizationKeys.Payment_Transactions]</h3>
+            <div class="row breadcrumbs-top d-inline-block">
+                <div class="breadcrumb-wrapper col-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a>@Localizer[PublicEnums.LocalizationKeys.Home]</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            @Localizer[PublicEnums.LocalizationKeys.Payment_Transactions]
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-body">
+        <div class="card">
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(ViewBag.Error))
+                    {
+                        <div class="alert alert-danger mb-2" role="alert">
+                            <strong>@Localizer[PublicEnums.LocalizationKeys.Alert]!</strong> @ViewBag.Error
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(ViewBag.Success))
+                    {
+                        <div class="alert alert-success mb-2" role="alert">
+                            <strong>@Localizer[PublicEnums.LocalizationKeys.Success]!</strong> @ViewBag.Success
+                        </div>
+                    }
+                    <div v-if="errors.length > 0" v-for="(error, index) in errors" class="alert alert-danger mb-2" v-cloak>
+                        {{error.description}}
+                    </div>
+                    <div v-if="messages.length > 0" v-for="(message, index) in messages" class="alert alert-success mb-2" v-cloak>
+                        {{message.description}}
+                    </div>
+                    <h4 class="form-section"><i class="ft-search"></i> @Localizer[PublicEnums.LocalizationKeys.Search]</h4>
+                    <br />
+                    <cool-table table-class="table table-striped" :items="model.items" :pagination="model.pagination" :headers="headers" @@pagechange="onPageChange">
+                        <template v-slot:body="slotProps">
+                            <tr v-for="item in slotProps.rowItems" style="cursor:pointer">
+                                <td>{{item.transactionDate | formatDateTime}}</td>
+                                <td>{{item.itemName}}</td>
+                                <td>{{item.paymentType}}</td>
+                                <td>{{item.transactionType}}</td>
+                                <td>{{item.amountGross}}</td>
+                                <td>{{item.pfPaymentID}}</td>
+                                <td>{{item.pfReferenceID}}</td>
+                                <td>{{item.pfPaymentStatus}}</td>
+                            </tr>
+                        </template>
+                    </cool-table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

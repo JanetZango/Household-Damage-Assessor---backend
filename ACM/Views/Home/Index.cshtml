@@ -1,0 +1,110 @@
+﻿@model ACM.ViewModels.HomePageViewModelFactory.HomePageViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = "Home Page";
+    ViewBag.MenuTab = "menu-dashboard";
+    ViewBag.MenuSubTab = "";
+}
+
+<div class="content-header row">
+</div>
+<div class="content-body">
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Here is your up to date dashboard</p>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <div class="card pull-up">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="media d-flex">
+                            <div class="media-body text-left">
+                                <h6 class="text-muted">Scheduled Leads</h6>
+                                <h3>@Model.Leads</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fa fa-calendar-check font-large-2 float-right warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card pull-up">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="media d-flex">
+                            <div class="media-body text-left">
+                                <h6 class="text-muted">Technicians</h6>
+                                <h3>@Model.Technicians</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fa fa-user font-large-2 float-right primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card pull-up">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="media d-flex">
+                            <div class="media-body text-left">
+                                <h6 class="text-muted">Completed Jobs</h6>
+                                <h3>@Model.CompletedJobs</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fa fa-check-square font-large-2 float-right success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (HtmlHelperExtensions.UserHasRole(PublicEnums.UserRoleList.ROLE_ADMINISTRATOR, User))
+        {
+            <div class="col-3">
+                <div class="card pull-up">
+                    <a href="/Users/ApprovalRequired">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="media d-flex">
+                                    <div class="media-body text-left">
+                                        <h6 class="text-muted">User Approval Required</h6>
+                                        <h3>@Model.UsersNeedsApproval</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-user font-large-2 float-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="card pull-up">
+                    <a href="/Users/ApprovalRequired">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="media-body text-left">
+                                    <h6 class="text-muted">User Approval Required</h6>
+                                    <h3>@Model.UsersNeedsApproval</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fa fa-user font-large-2 float-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

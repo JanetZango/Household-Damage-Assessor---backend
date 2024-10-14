@@ -1,0 +1,7 @@
+﻿@model ACM.ViewModels.UserMyNotificationsViewModel.UserMyNotificationDetailsViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = Localizer[PublicEnums.LocalizationKeys.My_Notification_Details];
+    Layout = null;
+}
+@Html.Raw(Model.Body);

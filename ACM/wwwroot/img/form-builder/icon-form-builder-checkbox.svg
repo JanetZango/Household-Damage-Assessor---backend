@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="71.037" height="100.451" viewBox="0 0 71.037 100.451">
+  <g id="Layer_2" data-name="Layer 2" transform="translate(0 -0.009)">
+    <g id="Layer_1" data-name="Layer 1" transform="translate(0 0.009)">
+      <g id="icon-checkbox-blue">
+        <path id="Path_23" data-name="Path 23" d="M8.265,97.617A8.265,8.265,0,0,1,0,89.352V14.085A8.28,8.28,0,0,1,8.265,5.82h9.487V9.067H8.265a5,5,0,0,0-4.989,5.019V89.352a4.989,4.989,0,0,0,4.989,4.989H62.772a4.989,4.989,0,0,0,4.989-4.989V14.085a5,5,0,0,0-4.989-5.019H53.285V5.82h9.486a8.28,8.28,0,0,1,8.265,8.265V89.352a8.28,8.28,0,0,1-8.265,8.265Z" transform="translate(0 2.833)" fill="#253370"/>
+        <path id="Path_24" data-name="Path 24" d="M45.791,18.626H12.76V4.85h9.963a6.865,6.865,0,0,1,13.12,0h9.948ZM16.007,15.35H42.515V8.127H32.969L32.85,6.637a3.589,3.589,0,0,0-7.148,0l-.1,1.489H16.1Z" transform="translate(6.243 -0.009)" fill="#253370"/>
+        <path id="Path_25" data-name="Path 25" d="M52.637,64.922H9.3V21.6H52.637ZM12.576,61.646H49.361V24.876H12.576Z" transform="translate(4.55 10.554)" fill="#253370"/>
+        <path id="Path_26" data-name="Path 26" d="M23.972,48.361l-8.012-8,2.323-2.308,5.689,5.674L37.137,30.55l2.323,2.323Z" transform="translate(7.808 14.932)" fill="#253370"/>
+      </g>
+    </g>
+  </g>
+</svg>

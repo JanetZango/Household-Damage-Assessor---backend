@@ -1,0 +1,200 @@
+﻿@model ACM.ViewModels.UsersViewModelFactory.UsersListViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = Localizer[PublicEnums.LocalizationKeys.Users_List];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.MenuTab = "menu-admin";
+    ViewBag.MenuSubTab = "menu-admin-users";
+}
+@section Scripts
+    {
+    <script src="~/js/vue.cool-table.js"></script>
+    <script type="text/javascript">
+        var pageModel = @Json.Serialize(Model);
+        var timerId = null;
+        var listCurrentPage = null;
+        var listReloaded = false;
+
+        Vue.component(VueCoolTable.name, VueCoolTable);
+
+        var searchApp = new Vue({
+            el: '#vue-app',
+            data: {
+                errors: [],
+                messages: [],
+                model: pageModel,
+                searchValue: pageModel.searchValue,
+                headers: [
+                        { text: '@Localizer[PublicEnums.LocalizationKeys.Actions]', code: '', disableSorting: true },
+                        { text: '@Localizer[PublicEnums.LocalizationKeys.Display_Name]', code: 'DisplayName', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Email_Address]', code: 'EmailAddress', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Province]', code: 'ProvinceName', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Countries]', code: 'CountryName', disableSorting: false },
+                    ]
+            },
+            methods: {
+                onPageChange: function (pagination) {
+                    this.ReloadModel(pagination);
+                },
+                ReloadModel: function (pagination, callback) {
+                    var self = this;
+
+                    var postModel = {
+                        searchValue: self.$data.searchValue,
+                        Pagination: pagination,
+                    };
+
+                    self.$data.model.searchValue = self.$data.searchValue;
+                    $.post("/Users/Index", postModel, function (response) {
+                        if (response.result) {
+                            self.$data.model = response.data;
+                            listReloaded = true;
+                            if (callback != null && callback != undefined) {
+                                callback();
+                            }
+                        }
+                        else {
+                            self.$data.messages = [];
+                            self.$data.errors = [];
+                            self.$data.errors.push({ description: response.message });
+                        }
+                    })
+                },
+                Settime: function (callback) {
+                    var self = this;
+                    clearTimeout(timerId);
+                    timerId = setTimeout(
+                        function (d) { return searchApp.ReloadModel(self.$data.model.pagination); },
+                        1500
+                    );
+                },
+                RemoveButtonOnClick: function (item) {
+                    var self = this;
+                    $.post("@Url.Action("RemoveUser", "Users")", { ID: item.userID }, function (response) {
+                        if (response.result == true) {
+                            self.ReloadModel(self.$data.model.pagination);
+                            self.$data.messages = [];
+                            self.$data.errors = [];
+                            self.$data.messages.push({ description: response.message });
+                        }
+                        else {
+                            //Show error message
+                        }
+                    });
+                }
+            },
+
+            watch: {
+                searchValue: function (val) {
+                    if (val.length > 3) {
+                        this.Settime();
+                    }
+                    if (val.length == 0) {
+                        this.Settime();
+                    }
+                }
+            },
+            updated: function () {
+            },
+            beforeUpdate: function () {
+            }
+        });
+    </script>
+}
+<div id="vue-app">
+    <div class="content-header row">
+        <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
+            <h3 class="content-header-title mb-0 d-inline-block">@Localizer[PublicEnums.LocalizationKeys.Users_List]</h3>
+            <div class="row breadcrumbs-top d-inline-block">
+                <div class="breadcrumb-wrapper col-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a>@Localizer[PublicEnums.LocalizationKeys.Administration]</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            @Localizer[PublicEnums.LocalizationKeys.Users]
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-body">
+        <div class="card">
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(ViewBag.Error))
+                    {
+                        <div class="alert alert-danger mb-2" role="alert">
+                            <strong>@Localizer[PublicEnums.LocalizationKeys.Alert]!</strong> @ViewBag.Error
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(ViewBag.Success))
+                    {
+                        <div class="alert alert-success mb-2" role="alert">
+                            <strong>@Localizer[PublicEnums.LocalizationKeys.Success]!</strong> @ViewBag.Success
+                        </div>
+                    }
+                    <div v-if="errors.length > 0" v-for="(error, index) in errors" class="alert alert-danger mb-2" v-cloak>
+                        {{error.description}}
+                    </div>
+                    <div v-if="messages.length > 0" v-for="(message, index) in messages" class="alert alert-success mb-2" v-cloak>
+                        {{message.description}}
+                    </div>
+                    <h4 class="form-section"><i class="ft-search"></i> @Localizer[PublicEnums.LocalizationKeys.Search]</h4>
+                    <div class="row">
+                        <div class="col-11">
+                            <div class="form-group">
+                                <input type="text" class="form-control" v-model="searchValue">
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <a href="/Users/Details/@Guid.Empty" title="Add User" class="btn btn-icon btn-success mr-1 mb-1"><i class="la la-plus"></i></a>
+                        </div>
+                    </div>
+                    <br />
+                    <cool-table table-class="table table-striped" :items="model.userList" :pagination="model.pagination" :headers="headers" @@pagechange="onPageChange">
+                        <template v-slot:body="slotProps">
+                            <tr v-for="item in slotProps.rowItems" style="cursor:pointer">
+                                <td>
+                                    <a :href="'/Users/Details/' + item.userID" title="@Localizer[PublicEnums.LocalizationKeys.Edit]" class="btn btn-icon btn-success">
+                                        <i class="fa fa-pen"></i>
+                                    </a>
+                                    <button data-toggle="modal" :data-target="'#modal_' + item.userID" type="button" title="@Localizer[PublicEnums.LocalizationKeys.Remove]" class="btn btn-icon btn-danger">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                    <div :id="'modal_' + item.userID" class="modal" role="dialog" style="display:none">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">@Localizer[PublicEnums.LocalizationKeys.Remove_user]</h4>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>
+                                                        @Localizer[PublicEnums.LocalizationKeys.Remove_user_message] - {{item.displayName}}
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-danger" data-dismiss="modal" v-on:click="RemoveButtonOnClick(item)">@Localizer[PublicEnums.LocalizationKeys.Remove]</button>
+                                                    <button class="btn btn-default" data-dismiss="modal" type="button">@Localizer[PublicEnums.LocalizationKeys.Cancel]</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{item.displayName}}</td>
+                                <td>{{item.emailAddress}}</td>
+                                <td>{{item.provinceName}}</td>
+                                <td>{{item.countryName}}</td>
+                            </tr>
+                        </template>
+                    </cool-table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

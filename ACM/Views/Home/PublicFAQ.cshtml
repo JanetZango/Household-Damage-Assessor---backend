@@ -1,0 +1,54 @@
+﻿@model ACM.ViewModels.FAQDisplayViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = Localizer[PublicEnums.LocalizationKeys.FAQ];
+    ViewBag.MenuTab = "menu-dashboard";
+    ViewBag.MenuSubTab = "";
+}
+<div class="content-header row">
+    <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
+        <h3 class="content-header-title mb-0 d-inline-block">@Localizer[PublicEnums.LocalizationKeys.Frequently_Asked_Questions];</h3>
+        <div class="row breadcrumbs-top d-inline-block">
+            <div class="breadcrumb-wrapper col-12">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a>@Localizer[PublicEnums.LocalizationKeys.FAQ]</a>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content-body">
+
+    @if (Model.Categories != null)
+    {
+        int index = 0;
+        int catIndex = 0;
+        @foreach (var item in Model.Categories)
+        {
+            catIndex++;
+            <h4> @item.CategoryName</h4>
+
+            <div id="accordionWrapa_@catIndex" role="tablist" aria-multiselectable="true">
+                <div class="card accordion">
+                    @foreach (var itemFaq in item.FAQList)
+                    {
+                        index++;
+
+                        <a id="heading_@index" class="card-header collapsed" role="tab" data-toggle="collapse" href="#accordion_@index" aria-expanded="false" aria-controls="accordion_@index">
+                            <div class="card-title lead">@itemFaq.Title</div>
+                        </a>
+                        <div id="accordion_@index" role="tabpanel" data-parent="#accordionWrapa_@catIndex" aria-labelledby="heading_@index" class="collapse" style="">
+                            <div class="card-content">
+                                <div class="card-body">
+                                    @Html.Raw(itemFaq.Content)
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>

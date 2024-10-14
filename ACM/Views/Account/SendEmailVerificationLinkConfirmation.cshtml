@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Email Verification";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+    <section class="row flexbox-container">
+        <div class="col-12 d-flex align-items-center justify-content-center">
+            <div class="col-lg-4 col-md-8 col-10 box-shadow-2 p-0">
+                <div class="card border-grey border-lighten-3 px-1 py-1 m-0">
+                    <div class="card-header border-0">
+                        <div class="card-title text-center">
+                            <img src="/img/networkLogo.jpeg" style="width:200px;" alt="branding logo">
+                        </div>
+                        <h6 class="card-subtitle line-on-side text-muted text-center font-small-3 pt-2"><span>Email Verification</span></h6>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            @Html.AntiForgeryToken()
+                            @if (!string.IsNullOrEmpty(ViewBag.Error))
+                            {
+                                <div class="alert alert-danger mb-2" role="alert">
+                                    <strong>Alert!</strong> @ViewBag.Error
+                                </div>
+                            }
+                        <p>
+                            An email verification link have been emailed to you. Please verify your email address by clicking on the link in the email that was sent to you.<br /><br />
+                            Please also look in your spam/junk folder in case your service provider is blocking the emails.
+                        </p>
+                        </div>
+                        <p class="card-subtitle line-on-side text-muted text-center font-small-3 mx-2 my-1">
+                            <span>
+                                Want to log in?
+                            </span>
+                        </p>
+                        <div class="card-body">
+                            <a href="/Account/Login" class="btn btn-outline-pink btn-block">
+                                <i class="la la-user"></i>
+                                Login to existing account?
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>

@@ -1,0 +1,117 @@
+﻿@model ACM.ViewModels.Wallet.TopupWalletViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = Localizer[PublicEnums.LocalizationKeys.Wallet_Topup];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        var pageModel = @Json.Serialize(Model);
+
+        $(function () {
+
+        });
+
+        var detailsApp = new Vue({
+            el: '#vue-app',
+            data: {
+                errors: [],
+                messages: [],
+                model: pageModel
+            },
+            methods: {
+                SelectAmount: function(item){
+                    this.model.selectedWalletAmount = item.value;
+                },
+                PayNow: function(){
+                    if(this.model.selectedWalletAmount != null && this.model.selectedWalletAmount != ''){
+                        $("#CustomAmount").val(this.model.customAmount);
+                        $("#SelectedWalletAmount").val(this.model.selectedWalletAmount);
+
+                        document.forms[0].submit();
+                    }
+                    else{
+                        this.errors = [];
+                        this.errors.push({description: 'Please select an amount to pay'});
+                    }
+                }
+            },
+            watch: {
+                
+            }
+        });
+
+    </script>
+}
+<div id="vue-app">
+    <form asp-controller="Payments" asp-action="TopupWallet">
+    <div class="content-header row">
+        <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
+            <h3 class="content-header-title mb-0 d-inline-block">@Localizer[PublicEnums.LocalizationKeys.Wallet_Topup]</h3>
+            <div class="row breadcrumbs-top d-inline-block">
+                <div class="breadcrumb-wrapper col-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a>@Localizer[PublicEnums.LocalizationKeys.Home]</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            <a>@Localizer[PublicEnums.LocalizationKeys.Wallet_Topup]</a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-body">
+       @if (!string.IsNullOrEmpty(ViewBag.Error))
+        {
+            <div class="alert alert-danger mb-2" role="alert">
+                <strong>@Localizer[PublicEnums.LocalizationKeys.Alert]!</strong> @ViewBag.Error
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(ViewBag.Success))
+        {
+            <div class="alert alert-success mb-2" role="alert">
+                <strong>@Localizer[PublicEnums.LocalizationKeys.Success]!</strong> @ViewBag.Success
+            </div>
+        }
+            <div v-if="errors.length > 0" v-for="(error, index) in errors" class="alert alert-danger mb-2" v-cloak>
+            {{error.description}}
+        </div>
+        <div v-if="messages.length > 0" v-for="(message, index) in messages" class="alert alert-success mb-2" v-cloak>
+            {{message.description}}
+        </div>
+        <p>@Localizer[PublicEnums.LocalizationKeys.Wallet_Topup_Instruction]</p>
+        <div class="row">
+            <div class="col-3" v-for="item in model.walletAmountsList">
+                <div :class="['card', 'cursor-pointer', {'border-success': model.selectedWalletAmount == item.value}]" v-on:click="SelectAmount(item)">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="media-body text-left mr-1">
+                                    <h6 class="text-muted">@Localizer[PublicEnums.LocalizationKeys.Topup_with]</h6>
+                                    <h3 v-if="item.value != 'CUSTOM_AMOUNT'">{{item.text}}</h3>
+                                    <input v-if="item.value == 'CUSTOM_AMOUNT'" type="text" class="form-control" v-model="model.customAmount" v-on:focus="SelectAmount(item)">
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fa fa-money-bill font-large-2 float-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions text-right">
+            <button type="button" class="btn btn-primary" v-on:click="PayNow()">
+                @Localizer[PublicEnums.LocalizationKeys.Pay_Now]
+            </button>
+        </div>
+    </div>
+    <input type="hidden" asp-for="CustomAmount" />
+    <input type="hidden" asp-for="SelectedWalletAmount" />
+    </form>
+</div>

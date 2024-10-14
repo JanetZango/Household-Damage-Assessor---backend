@@ -1,0 +1,112 @@
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration _configuration
+@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <title>@ViewData["Title"] - ACM</title>
+    <link rel="apple-touch-icon" href="/img/LogoOnly.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Google fonts-->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,600;1,600&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,500;0,600;0,700;1,300;1,500;1,600;1,700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;1,400&amp;display=swap" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="/public-assets/css/styles.css" rel="stylesheet" />
+</head>
+<body id="page-top">
+    
+    @{
+        var principal = User as ClaimsPrincipal;
+        var check = User.Identity.IsAuthenticated;
+        var displayName = "";
+        var emailAddress = "";
+        var UserID = "";
+
+        if (check)
+        {
+            displayName = principal.Claims.Where(x => x.Type == ClaimTypes.Name).First().Value;
+            UserID = principal.Claims.Where(x => x.Type == "http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/UserID").First().Value;
+
+            if (principal.Claims.Any(x => x.Type == ClaimTypes.Email))
+            {
+                emailAddress = principal.Claims.Where(x => x.Type == ClaimTypes.Email).First().Value;
+            }
+        }
+    }
+
+     <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm" id="mainNav">
+        <div class="container px-5">
+            <a class="navbar-brand fw-bold" href="~/#page-top"><img src="/public-assets/ACM_logo.png" /></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                Menu
+                <i class="bi-list"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto me-4 my-3 my-lg-0">
+                    <li class="nav-item"><a class="nav-link me-lg-3" href="~/#features">Features</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarRegisteredMail" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Registered Mail
+                          </a>
+                          <ul class="dropdown-menu" aria-labelledby="navbarRegisteredMail">
+                            <li><a class="dropdown-item" href="~/Public/RegMailValidate">Validate Registered Mail</a></li>
+                            <li><a class="dropdown-item" href="~/Public/ViewRegisteredMailOnline/@Guid.Empty">View Securely Online</a></li>
+                          </ul>
+                    </li>
+                </ul>
+                @if(check)
+                {
+                    <a href="/Home/Index" class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0">
+                        <span class="d-flex align-items-center">
+                            <i class="bi-house-fill me-2"></i>
+                            <span class="small">ACM App Dashboard</span>
+                        </span>
+                    </a>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0">
+                        <span class="d-flex align-items-center">
+                            <i class="bi-person-fill me-2"></i>
+                            <span class="small">Login</span>
+                        </span>
+                    </a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    @RenderBody()
+
+    <footer class="bg-black text-center py-5">
+        <div class="container px-5">
+            <div class="text-white-50 small">
+                <div class="mb-2">&copy; @DateTime.Now.Year Tirisan Tech Solutions | </div>
+                <a href="/Home/PublicTermsAndConditions">Terms</a>
+                <span class="mx-1">&middot;</span>
+                <a href="/Home/PublicFAQ">FAQ</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="/public-assets/js/scripts.js"></script>
+    <!-- BEGIN: Vendor JS-->
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
+    <!-- BEGIN Vendor JS-->
+    @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
+    <script src="~/lib/vue2/vue.min.js"></script>
+    <script src="~/lib/bootbox/bootbox.min.js"></script>
+
+    @Html.Raw(JavaScriptSnippet.FullScript)
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

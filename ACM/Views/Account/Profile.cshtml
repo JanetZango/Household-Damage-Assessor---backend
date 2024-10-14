@@ -1,0 +1,189 @@
+﻿@model ACM.ViewModels.UsersViewModelFactory.UserDetailsViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = Localizer[PublicEnums.LocalizationKeys.Details];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.MenuTab = "menu-dashboard";
+    ViewBag.MenuSubTab = "";
+}
+
+@section Scripts
+{
+
+    <script src="~/js/jquery.cascade-select.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#SelectedCountry').cascade({
+                source: '@Url.Action("GetCountryProvinces", "common")',
+                cascaded: "SelectedProvince",
+                dependentNothingFoundLabel: "No Provinces Found",
+                dependentStartingLabel: "<select a Province >",
+                dependentLoadingLabel: "Loading ...",
+                appendEmpry: true,
+                emptyDescription: "Select a Province"
+            });
+            $('#SelectedProvince').cascade({
+                source: '@Url.Action("GetProvincesLocations", "common")',
+                cascaded: "SelectedLocation",
+                dependentNothingFoundLabel: "No Locations Found",
+                dependentStartingLabel: "<select a Location >",
+                dependentLoadingLabel: "Loading ...",
+                appendEmpry: true,
+                emptyDescription: "Select a Location"
+            });
+            if ("@Model.SelectedProvince" == "" || "@Model.SelectedProvince" == "@Guid.Empty") {
+                $('#SelectedCountry').trigger("change");
+            }
+        });
+
+    </script>
+}
+<div>
+    <form asp-controller="Account" asp-action="Profile" enctype="multipart/form-data">
+        <div class="content-header row">
+            <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
+                <h3 class="content-header-title mb-0 d-inline-block">@Localizer[PublicEnums.LocalizationKeys.Profile]</h3>
+                <div class="row breadcrumbs-top d-inline-block">
+                    <div class="breadcrumb-wrapper col-12">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a>@Localizer[PublicEnums.LocalizationKeys.Home]</a>
+                            </li>
+                            <li class="breadcrumb-item active">
+                                @Localizer[PublicEnums.LocalizationKeys.Profile]
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-body">
+            <div class="card">
+                <div class="card-content collapse show">
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(ViewBag.Error))
+                        {
+                            <div class="alert alert-danger mb-2" role="alert">
+                                <strong>@Localizer[PublicEnums.LocalizationKeys.Alert]!</strong> @ViewBag.Error
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(ViewBag.Success))
+                        {
+                            <div class="alert alert-success mb-2" role="alert">
+                                <strong>@Localizer[PublicEnums.LocalizationKeys.Success]!</strong> @ViewBag.Success
+                            </div>
+                        }
+                        <h4 class="form-section"><i class="fa fa-user"></i> @Localizer[PublicEnums.LocalizationKeys.Account_Details]</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="Title">@Localizer[PublicEnums.LocalizationKeys.Title] </label>
+                                    <input type="text" class="form-control" asp-for="Title">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="IDNumber"> @Localizer[PublicEnums.LocalizationKeys.Identification_Number] </label>
+                                    <input type="text" class="form-control" asp-for="IDNumber">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="FirstName ">@Localizer[PublicEnums.LocalizationKeys.First_Name] </label>
+                                    <input type="text" class="form-control" placeholder="Your name" asp-for="FirstName">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="Surname"> @Localizer[PublicEnums.LocalizationKeys.Surname] </label>
+                                    <input type="text" class="form-control" placeholder="Your Surname" asp-for="Surname">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="EmailAddress">@Localizer[PublicEnums.LocalizationKeys.Email_Address] </label>
+                                    <input type="text" class="form-control" placeholder="Your email address" asp-for="EmailAddress">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="CellphoneNumber"> @Localizer[PublicEnums.LocalizationKeys.Cellphone_Number] </label>
+                                    <input type="text" class="form-control" placeholder="Your Cellphone Number" asp-for="CellphoneNumber">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="DisplayName">@Localizer[PublicEnums.LocalizationKeys.What_would_you_like_to_be_called] </label>
+                                    <input type="text" class="form-control" placeholder="Your Display Name" asp-for="DisplayName">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="SelectedTimezone">@Localizer[PublicEnums.LocalizationKeys.Timezone] </label>
+                                    <select class="form-control" asp-items="Model.Timezones" asp-for="SelectedTimezone"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="SelectedLanguageCultureID">@Localizer[PublicEnums.LocalizationKeys.Language] </label>
+                                    <select class="form-control" asp-items="Model.LanguageCultureList" asp-for="SelectedLanguageCultureID"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="SelectedCountry">@Localizer[PublicEnums.LocalizationKeys.Country] </label>
+                                    <select class="form-control" asp-items="Model.Countries" asp-for="SelectedCountry" id="SelectedCountry"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="SelectedLocation">@Localizer[PublicEnums.LocalizationKeys.Province] </label>
+                                    <select class="form-control" asp-items="Model.Provinces" asp-for="SelectedProvince" id="SelectedProvince"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                 <div class="form-group">
+                                    <input type="file" class="form-control" asp-for="ImageFile">
+                                    @if (!string.IsNullOrEmpty(Model.ProfileImageName))
+                                    {
+                                        <img src="/Account/LoadUserProfileImage?PIN=@Model.ProfileImageName" style="max-height:150px" />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4 class="form-section"><i class="far fa-bell"></i></i> @Localizer[PublicEnums.LocalizationKeys.ReceiveNotificationsTitle]</h4>
+                                <div class="custom-control custom-checkbox">
+                                    @Html.CheckBoxFor(m => m.ReceiveEmailNotifactions, new { @class = "custom-control-input" })
+                                    @Html.LabelFor(m => m.ReceiveEmailNotifactions, Localizer[PublicEnums.LocalizationKeys.ReciveEmailNotifications], new { @class = "custom-control-label" })
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-actions text-right">
+                            <a href="/Users/Index" class="btn btn-default mr-1">
+                                <i class="ft-x"></i> @Localizer[PublicEnums.LocalizationKeys.Back_to_list]
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="la la-check-square-o"></i> @Localizer[PublicEnums.LocalizationKeys.Save_Changes]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" asp-for="UserID" />
+        <input type="hidden" asp-for="ProfileImageName" />
+    </form>
+</div>

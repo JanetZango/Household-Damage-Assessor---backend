@@ -1,0 +1,14 @@
+[
+  {
+    "outputFileName": "wwwroot/app-assets/app-assets/vendors/css/pickers/miniColors/jquery.minicolors.min.css",
+    "inputFiles": [
+      "wwwroot/app-assets/app-assets/vendors/css/pickers/miniColors/jquery.minicolors.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/app-assets/vendors/css/pickers/miniColors/jquery.minicolors.min.css",
+    "inputFiles": [
+      "wwwroot/app-assets/vendors/css/pickers/miniColors/jquery.minicolors.css"
+    ]
+  }
+]

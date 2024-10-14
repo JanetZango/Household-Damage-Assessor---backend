@@ -1,0 +1,268 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>6836d0be-a3fa-4cb9-afa6-3e0fc0d8e16c</UserSecretsId>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>App.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="bundleconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-datetime.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-drawing.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-dynamic.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-information.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-location.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-number.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-picture.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-question.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-signature.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-slider.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-definition-text.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-caution-instruction.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-datetime.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-drawing.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-dynamic.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-feedback.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-information.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-location.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-number.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-picture.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-question.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-signature.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-slider.js" />
+    <None Include="wwwroot\js\FormBuilderComponents\fb-instance-text.js" />
+    <None Include="wwwroot\lib\smooth-dnd\dist\index.js" />
+    <None Include="wwwroot\lib\smooth-dnd\LICENSE" />
+    <None Include="wwwroot\lib\smooth-dnd\README.md" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\amd\luxon.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\amd\luxon.js.map" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\cjs-browser\luxon.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\cjs-browser\luxon.js.map" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\global\luxon.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\global\luxon.js.map" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\global\luxon.min.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\global\luxon.min.js.map" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\node\luxon.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\node\luxon.js.map" />
+    <None Include="wwwroot\lib\timepicker\luxon\build\readme.md" />
+    <None Include="wwwroot\lib\timepicker\luxon\changelog.md" />
+    <None Include="wwwroot\lib\timepicker\luxon\license.md" />
+    <None Include="wwwroot\lib\timepicker\luxon\README.md" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\datetime.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\duration.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\errors.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\conversions.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\diff.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\digits.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\english.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\formats.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\formatter.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\invalid.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\locale.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\regexParser.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\tokenParser.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\util.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\impl\zoneUtil.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\info.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\interval.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\luxon.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\luxonFilled.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\settings.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\zone.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\zones\fixedOffsetZone.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\zones\IANAZone.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\zones\invalidZone.js" />
+    <None Include="wwwroot\lib\timepicker\luxon\src\zones\localZone.js" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\CHANGELOG.md" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\dist\vue-datetime.common.js" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\dist\vue-datetime.esm.js" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\dist\vue-datetime.js" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\dist\vue-datetime.min.js" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\LICENSE" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\README.md" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\src\Datetime.vue" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\src\DatetimeCalendar.vue" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\src\DatetimeMonthPicker.vue" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\src\DatetimePopup.vue" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\src\DatetimeTimePicker.vue" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\src\DatetimeYearPicker.vue" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\src\FlowManager.js" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\src\index.js" />
+    <None Include="wwwroot\lib\timepicker\vue-datetime\src\util.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\.editorconfig" />
+    <None Include="wwwroot\lib\timepicker\weekstart\.eslintignore" />
+    <None Include="wwwroot\lib\timepicker\weekstart\babel.config.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\api.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\api.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\full.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\full.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\fullLangRegionMap.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\fullLangRegionMap.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\langRegionMap.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\langRegionMap.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\main.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\main.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\regionDayMap.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\commonjs\regionDayMap.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\api.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\api.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\full.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\full.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\fullLangRegionMap.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\fullLangRegionMap.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\langRegionMap.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\langRegionMap.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\main.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\main.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\regionDayMap.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\es-module\regionDayMap.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\full.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\full.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\main.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\main.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\min\full.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\min\full.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\min\main.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\dist\min\main.js.map" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\fonts\glyphicons-halflings-regular.svg" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\fonts\glyphicons-halflings-regular.woff2" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\scripts\docstrap.lib.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\scripts\fulltext-search-ui.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\scripts\fulltext-search.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\scripts\lunr.min.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\scripts\prettify\jquery.min.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\scripts\prettify\lang-css.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\scripts\prettify\prettify.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\scripts\sunlight.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\doc\scripts\toc.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\full.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\History.md" />
+    <None Include="wwwroot\lib\timepicker\weekstart\LICENSE" />
+    <None Include="wwwroot\lib\timepicker\weekstart\README.md" />
+    <None Include="wwwroot\lib\timepicker\weekstart\src\api.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\src\api.test.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\src\full.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\src\full.test.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\src\fullLangRegionMap.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\src\langRegionMap.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\src\main.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\src\main.test.js" />
+    <None Include="wwwroot\lib\timepicker\weekstart\src\regionDayMap.js" />
+    <None Include="wwwroot\lib\verte\dist\verte.esm.js" />
+    <None Include="wwwroot\lib\verte\dist\verte.js" />
+    <None Include="wwwroot\lib\verte\dist\verte.min.js" />
+    <None Include="wwwroot\lib\verte\LICENSE" />
+    <None Include="wwwroot\lib\verte\README.md" />
+    <None Include="wwwroot\lib\vue-slider-component\dist-css\vue-slider-component.common.js" />
+    <None Include="wwwroot\lib\vue-slider-component\dist-css\vue-slider-component.common.js.map" />
+    <None Include="wwwroot\lib\vue-slider-component\dist-css\vue-slider-component.umd.js" />
+    <None Include="wwwroot\lib\vue-slider-component\dist-css\vue-slider-component.umd.js.map" />
+    <None Include="wwwroot\lib\vue-slider-component\dist-css\vue-slider-component.umd.min.js" />
+    <None Include="wwwroot\lib\vue-slider-component\dist-css\vue-slider-component.umd.min.js.map" />
+    <None Include="wwwroot\lib\vue-slider-component\dist\vue-slider-component.common.js" />
+    <None Include="wwwroot\lib\vue-slider-component\dist\vue-slider-component.common.js.map" />
+    <None Include="wwwroot\lib\vue-slider-component\dist\vue-slider-component.umd.js" />
+    <None Include="wwwroot\lib\vue-slider-component\dist\vue-slider-component.umd.js.map" />
+    <None Include="wwwroot\lib\vue-slider-component\dist\vue-slider-component.umd.min.js" />
+    <None Include="wwwroot\lib\vue-slider-component\dist\vue-slider-component.umd.min.js.map" />
+    <None Include="wwwroot\lib\vue-slider-component\theme\antd.css.map" />
+    <None Include="wwwroot\lib\vue-slider-component\theme\default.css.map" />
+    <None Include="wwwroot\lib\vue-slider-component\theme\material.css.map" />
+    <None Include="wwwroot\lib\vue-smooth-dnd\dist\vue-smooth-dnd.esm.js" />
+    <None Include="wwwroot\lib\vue-smooth-dnd\dist\vue-smooth-dnd.js" />
+    <None Include="wwwroot\lib\vue-smooth-dnd\dist\vue-smooth-dnd.min.js" />
+    <None Include="wwwroot\lib\vue-smooth-dnd\LICENSE" />
+    <None Include="wwwroot\lib\vue-smooth-dnd\README.md" />
+    <None Include="wwwroot\lib\vue-tags-input\vue-tags-input.css.map" />
+    <None Include="wwwroot\lib\vue-tags-input\vue-tags-input.min.js" />
+    <None Include="wwwroot\lib\vue-tags-input\vue-tags-input.min.js.map" />
+    <None Include="wwwroot\manifest\manifest.webmanifest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Linq" />
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="Newtonsoft.Json" />
+    <Using Include="ACM.Helpers" />
+    <Using Include="System.Linq" />
+    <Using Include="ACM.Models" />
+    <Using Include="ACM.ViewModels" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="System.Security.Claims" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.10.0" />
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+    <PackageReference Include="EPPlus" Version="5.8.6" />
+    <PackageReference Include="Hangfire" Version="1.7.28" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.28" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.28" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.28" />
+    <PackageReference Include="Humanizer" Version="2.14.1" />
+    <PackageReference Include="itext7" Version="7.2.1" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="10.0.0" />
+    <PackageReference Include="MailKit" Version="3.1.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="6.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.2" />
+    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageReference Include="MomentSharp" Version="1.0.6149.39352" />
+    <PackageReference Include="PayFast" Version="1.0.5" />
+    <PackageReference Include="PayFast.AspNetCore" Version="1.0.5" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.2.3" />
+    <PackageReference Include="Wangkanai.Detection" Version="5.0.0" />
+    <PackageReference Include="WebEssentials.AspNetCore.PWA" Version="1.0.65" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\App.TemplateParser\App.TemplateParser.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\index.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\constants.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\container.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\defaults.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\dropHandlers.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\exportTypes.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\interfaces.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\layoutManager.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\mediator.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\polyfills.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\scroller.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\styles.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\smooth-dnd\dist\src\utils.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\timepicker\weekstart\full.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\timepicker\weekstart\index.d.ts" />
+  </ItemGroup>
+
+</Project>

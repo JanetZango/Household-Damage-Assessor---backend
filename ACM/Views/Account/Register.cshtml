@@ -1,0 +1,197 @@
+﻿@model ACM.ViewModels.RegisterViewModel
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{
+	ViewData["Title"] = "Register";
+	Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+@section Scripts
+{
+<script src="~/js/jquery.cascade-select.js"></script>
+<script type="text/javascript">
+	$(function () {
+		$("#FirstName").on("change", function () {
+			$("#DisplayName").val($("#FirstName").val() + " " + $("#Surname").val());
+		});
+		$("#Surname").on("change", function () {
+			$("#DisplayName").val($("#FirstName").val() + " " + $("#Surname").val());
+		});
+
+		$('#SelectedCountry').cascade({
+			source: '@Url.Action("GetCountryProvinces", "common")',
+			cascaded: "SelectedProvince",
+			dependentNothingFoundLabel: "No Provinces Found",
+			dependentStartingLabel: "<select a Province >",
+			dependentLoadingLabel: "Loading ...",
+			appendEmpry: true,
+			emptyDescription: "Select a Province"
+		});
+		if ("@Model.SelectedProvince" == "" || "@Model.SelectedProvince" == "@Guid.Empty") {
+			$('#SelectedCountry').trigger("change");
+		}
+	});
+</script>
+
+}
+
+<form asp-controller="Account" asp-action="Register" method="post">
+	<section class="row flexbox-container">
+		<div class="col-12 d-flex align-items-center justify-content-center">
+			<div class="col-lg-4 col-md-8 col-10 box-shadow-2 p-0">
+				<div class="card border-grey border-lighten-3 px-1 py-1 m-0">
+					<div class="card-header border-0">
+						<div class="card-title text-center">
+							<img src="/img/networkLogo.jpeg" style="width:200px;" alt="branding logo">
+						</div>
+						<h6 class="card-subtitle line-on-side text-muted text-center font-small-3 pt-2"><span>Register</span></h6>
+					</div>
+					<div class="card-content">
+						<div class="card-body">
+							@Html.AntiForgeryToken()
+							@if (!string.IsNullOrEmpty(ViewBag.Error))
+							{
+								<div class="alert alert-danger mb-2" role="alert">
+									<strong>Alert!</strong> @ViewBag.Error
+								</div>
+							}
+							else
+							{
+								<div class="alert alert-danger mb-2" id="alertDiv" role="alert" style="display:none">
+									<strong>Alert!</strong> <span id="errorMsg"></span>
+								</div>
+							}
+							<label class="form-control-static">Timezone</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<select class="form-control" asp-items="Model.Timezones" title="Preferred Time Zone" asp-for="SelectedTimezone"></select>
+								<div class="form-control-position">
+									<i class="la la-clock-o"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">Language</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<select class="form-control" asp-items="Model.LanguageCultureList" title="Preferred Time Zone" asp-for="SelectedLanguageCultureID"></select>
+								<div class="form-control-position">
+									<i class="la la-clock-o"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">Country</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<select class="form-control" asp-items="Model.Countries" title="Country of Practice / Registration" asp-for="SelectedCountry"></select>
+								<div class="form-control-position">
+									<i class="la la-location-arrow"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">Province</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<select class="form-control" asp-items="Model.Provinces" title="Location" asp-for="SelectedProvince"></select>
+								<div class="form-control-position">
+									<i class="la la-location-arrow"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">Title</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<input type="text" class="form-control" placeholder="Title" asp-for="Title">
+								<div class="form-control-position">
+									<i class="la la-user"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">First Name</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<input type="text" class="form-control" placeholder="Full name" asp-for="FirstName">
+								<div class="form-control-position">
+									<i class="la la-user"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">Surname</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<input type="text" class="form-control" placeholder="Surname" asp-for="Surname">
+								<div class="form-control-position">
+									<i class="la la-user"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">Preferred Full Name</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<input type="text" class="form-control" placeholder="What would you prefer to be called" asp-for="DisplayName">
+								<div class="form-control-position">
+									<i class="la la-user"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">Email Address</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<input type="text" class="form-control" placeholder="Email address" asp-for="EmailAddress">
+								<div class="form-control-position">
+									<i class="la la-envelope"></i>
+								</div>
+							</fieldset>
+
+							<label class="form-control-static">ID Number</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<input type="text" class="form-control" placeholder="Identification Number" asp-for="IDNumber">
+								<div class="form-control-position">
+									<i class="la la-user"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">Password</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<input type="password" class="form-control" asp-for="Password" placeholder="Enter Password">
+								<div class="form-control-position">
+									<i class="la la-key"></i>
+								</div>
+							</fieldset>
+							<label class="form-control-static">Confirm Password</label>
+							<fieldset class="form-group position-relative has-icon-left">
+								<input type="password" class="form-control" asp-for="ConfirmPassword" placeholder="Enter Password Again">
+								<div class="form-control-position">
+									<i class="la la-key"></i>
+								</div>
+							</fieldset>
+
+							<label class="form-control-static">Mobile Number</label>
+							<fieldset class="form-group position-relative has-icon-left">
+
+								<div class="input-group">
+
+									<input type="text" class="form-control" placeholder="Cellphone number" asp-for="CellphoneNumber">
+								</div>
+								<div class="form-control-position">
+									<i class="la la-mobile"></i>
+								</div>
+							</fieldset>
+							<div class="form-group row">
+								<div class="col-sm-12 col-12 text-center text-sm-left pr-0">
+									<fieldset>
+
+										<br />
+
+										<input asp-for="AcceptTermsAndConditions" class="chk-remember">
+
+										@Html.ActionLink("Terms and Conditions", "PublicTermsAndConditions", "Home");
+										<label for="AcceptTermsAndConditions"> I confirm that I have read and understood the terms and conditions</label>
+									</fieldset>
+								</div>
+							</div>
+							<div class="form-group row">
+								<div class="col-sm-12 col-12 text-center text-sm-left pr-0">
+								</div>
+							</div>
+
+							<button type="submit" class="btn btn-outline-pink btn-block"><i class="la la-user"></i> Register</button>
+						</div>
+						<p class="card-subtitle line-on-side text-muted text-center font-small-3 mx-2 my-1">
+							<span>
+								Want to log in instead?
+							</span>
+						</p>
+						<div class="card-body">
+							<a href="/Account/Login?ReturnUrl=@Model.ReturnUrl" class="btn btn-outline-primary btn-block">
+								<i class="la la-user"></i>
+								Login to existing account?
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<input type="hidden" asp-for="ReturnUrl" />
+</form>
+

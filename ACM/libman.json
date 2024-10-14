@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "@microsoft/signalr@latest",
+      "destination": "wwwroot/lib/microsoft/signalr/"
+    },
+    {
+      "library": "eonasdan-bootstrap-datetimepicker@4.17.49",
+      "destination": "wwwroot/lib/eonasdan-bootstrap-datetimepicker/",
+      "files": [
+        "build/css/bootstrap-datetimepicker-standalone.css",
+        "build/css/bootstrap-datetimepicker.css",
+        "build/css/bootstrap-datetimepicker.min.css",
+        "build/js/bootstrap-datetimepicker.min.js"
+      ]
+    },
+    {
+      "library": "vue-bootstrap-datetimepicker@5.0.1",
+      "destination": "wwwroot/lib/vue-bootstrap-datetimepicker/"
+    },
+    {
+      "library": "pc-bootstrap4-datetimepicker@4.17.51",
+      "destination": "wwwroot/lib/pc-bootstrap4-datetimepicker/",
+      "files": [
+        "build/css/bootstrap-datetimepicker.css",
+        "build/css/bootstrap-datetimepicker.min.css",
+        "build/js/bootstrap-datetimepicker.min.js"
+      ]
+    }
+  ]
+}

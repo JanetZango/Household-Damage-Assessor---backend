@@ -1,0 +1,178 @@
+﻿@model ACM.ViewModels.UserMyNotificationsViewModel.UserMyNotificationsListViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = Localizer[PublicEnums.LocalizationKeys.My_Notifications];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.MenuTab = "menu-dashboard";
+    ViewBag.MenuSubTab = "";
+}
+@section Scripts
+    {
+    <script src="~/js/vue.cool-table.js"></script>
+    <script type="text/javascript">
+        var pageModel = @Json.Serialize(Model);
+        var timerId = null;
+        var listCurrentPage = null;
+        var listReloaded = false;
+
+        Vue.component(VueCoolTable.name, VueCoolTable);
+
+        var searchApp = new Vue({
+            el: '#vue-app',
+            data: {
+                errors: [],
+                messages: [],
+                model: pageModel,
+                searchValue: pageModel.searchValue,
+                headers: [
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Actions]', code: '', disableSorting: true },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Title]', code: 'Title', disableSorting: true },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Subject]', code: 'Subject', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Received]', code: 'CreatedDateTime', disableSorting: false },
+                    { text: '@Localizer[PublicEnums.LocalizationKeys.Read]', code: 'IsRead', disableSorting: true },
+                    ]
+            },
+            methods: {
+                onPageChange: function (pagination) {
+                    this.ReloadModel(pagination);
+                },
+                ReloadModel: function (pagination, callback) {
+                    var self = this;
+
+                    var postModel = {
+                        searchValue: self.$data.searchValue,
+                        Pagination: pagination,
+                    };
+
+                    self.$data.model.searchValue = self.$data.searchValue;
+                    $.post("/Home/MyNotifications", postModel, function (response) {
+                        if (response.result) {
+                            self.$data.model = response.data;
+                            listReloaded = true;
+                            if (callback != null && callback != undefined) {
+                                callback();
+                            }
+                        }
+                        else {
+                            self.$data.messages = [];
+                            self.$data.errors = [];
+                            self.$data.errors.push({ description: response.message });
+                        }
+                    })
+                },
+                MarkAllRead: function () {
+                    $.post("/Home/MyNotificationsMarkRead", null, function (response) {
+                        if (response.result) {
+                            searchApp.ReloadModel(searchApp.$data.model.pagination);
+                        }
+                        else {
+                            self.$data.messages = [];
+                            self.$data.errors = [];
+                            self.$data.errors.push({ description: response.message });
+                        }
+                    })
+                },
+                Settime: function (callback) {
+                    var self = this;
+                    clearTimeout(timerId);
+                    timerId = setTimeout(
+                        function (d) { return searchApp.ReloadModel(self.$data.model.pagination); },
+                        1500
+                    );
+                },
+            },
+
+            watch: {
+                searchValue: function (val) {
+                    if (val.length > 3) {
+                        this.Settime();
+                    }
+                    if (val.length == 0) {
+                        this.Settime();
+                    }
+                }
+            },
+            updated: function () {
+            },
+            beforeUpdate: function () {
+            }
+        });
+    </script>
+}
+<div id="vue-app">
+    <div class="content-header row">
+        <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
+            <h3 class="content-header-title mb-0 d-inline-block">@Localizer[PublicEnums.LocalizationKeys.My_Notifications]</h3>
+            <div class="row breadcrumbs-top d-inline-block">
+                <div class="breadcrumb-wrapper col-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a>@Localizer[PublicEnums.LocalizationKeys.Home]</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            @Localizer[PublicEnums.LocalizationKeys.My_Notifications]
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <div class="card">
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(ViewBag.Error))
+                    {
+                        <div class="alert alert-danger mb-2" role="alert">
+                            <strong>@Localizer[PublicEnums.LocalizationKeys.Alert]!</strong> @ViewBag.Error
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(ViewBag.Success))
+                    {
+                        <div class="alert alert-success mb-2" role="alert">
+                            <strong>@Localizer[PublicEnums.LocalizationKeys.Success]!</strong> @ViewBag.Success
+                        </div>
+                    }
+                    <div v-if="errors.length > 0" v-for="(error, index) in errors" class="alert alert-danger mb-2" v-cloak>
+                        {{error.description}}
+                    </div>
+                    <div v-if="messages.length > 0" v-for="(message, index) in messages" class="alert alert-success mb-2" v-cloak>
+                        {{message.description}}
+                    </div>
+                    <h4 class="form-section"><i class="ft-search"></i> @Localizer[PublicEnums.LocalizationKeys.Search]</h4>
+                    <div class="row">
+                        <div class="col-10">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search" v-model="searchValue">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-icon btn-success mr-1 mb-1" v-on:click="MarkAllRead()">
+                                @Localizer[PublicEnums.LocalizationKeys.Mark_all_as_Read]
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <cool-table table-class="table table-striped" :items="model.notificationList" :pagination="model.pagination" :headers="headers" @@pagechange="onPageChange">
+                        <template v-slot:body="slotProps">
+                            <tr v-for="item in slotProps.rowItems" style="cursor:pointer">
+                                <td>
+                                    <a :href="'/Home/MyNotificationDetails/' + item.userInAppNotificationID" title="View" class="btn btn-success btn-icon-only">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </td>
+                                <td>{{item.title}}</td>
+                                <td>{{item.subject}}</td>
+                                <td>{{item.createdDateTime}}</td>
+                                <td>
+                                    <i v-if="item.isRead" class="fa fa-check"></i>
+                                </td>
+                            </tr>
+                        </template>
+                    </cool-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

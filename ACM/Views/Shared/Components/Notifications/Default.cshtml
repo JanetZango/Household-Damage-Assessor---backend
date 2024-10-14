@@ -1,0 +1,55 @@
+﻿@model ACM.ViewModels.NotificationsViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+
+
+<a class="nav-link nav-link-label" href="#" data-toggle="dropdown"><i class="ficon ft-bell"></i><span class="badge badge-pill badge-danger badge-up badge-glow">@Model.TotalNtf</span></a>
+<ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">
+    <li class="dropdown-menu-header">
+        <h6 class="dropdown-header m-0"><span class="grey darken-2">@Localizer[PublicEnums.LocalizationKeys.Notifications]</span></h6>
+    </li>
+    <li class="scrollable-container media-list w-100">
+        @if (Model.NotificationList.Count == 0)
+        {
+            <a>
+                <div class="media">
+                    <div class="media-left align-self-center"><i class="ft-plus-square icon-bg-circle bg-cyan mr-0"></i></div>
+                    <div class="media-body">
+                        <h6 class="media-heading">
+                            @Localizer[PublicEnums.LocalizationKeys.No_New_Notifications]
+                        </h6>
+                    </div>
+                </div>
+            </a>
+        }
+        @foreach (var item in Model.NotificationList)
+        {
+            if (item.UserInAppNotificationID != Guid.Empty)
+            {
+                <a href="/home/MyNotificationDetails/@item.UserInAppNotificationID">
+                    <div class="media">
+                        <div class="media-left align-self-center"><i class="@item.IconClass icon-bg-circle @item.IconBGColor mr-0"></i></div>
+                        <div class="media-body">
+                            <h6 class="media-heading">@item.Title</h6>
+                            <p class="notification-text font-small-3 text-muted">@item.Subject</p><small>
+                                <time class="media-meta text-muted" datetime="2015-06-11T18:29:20+08:00">@item.TimeAgo</time>
+                            </small>
+                        </div>
+                    </div>
+                </a>
+            }
+            else
+            {
+                <div class="media">
+                    <div class="media-left align-self-center"><i class="@item.IconClass icon-bg-circle @item.IconBGColor mr-0"></i></div>
+                    <div class="media-body">
+                        <h6 class="media-heading">@item.Title</h6>
+                        <p class="notification-text font-small-3 text-muted">@item.Subject</p><small>
+                            <time class="media-meta text-muted" datetime="2015-06-11T18:29:20+08:00">@item.TimeAgo</time>
+                        </small>
+                    </div>
+                </div>
+            }
+        }
+    </li>
+    <li class="dropdown-menu-footer"><a class="dropdown-item text-muted text-center" href="/home/mynotifications">@Localizer[PublicEnums.LocalizationKeys.Read_all_notifications]</a></li>
+</ul>

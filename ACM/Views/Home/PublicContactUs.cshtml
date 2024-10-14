@@ -1,0 +1,61 @@
+﻿@model ACM.ViewModels.PublicContactUsViewModel
+@inject IStringLocalizer<SessionStringLocalizer> Localizer
+@{
+    ViewData["Title"] = Localizer[PublicEnums.LocalizationKeys.Terms_and_Conditions];
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+@section Scripts
+    {
+    <script src="~/lib/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+      
+    </script>
+}
+
+
+    <section class="row flexbox-container">
+        <div class="col-12 d-flex align-items-center justify-content-center">
+            <div class="col-lg-4 col-md-8 col-10 box-shadow-2 p-0">
+                <div class="card border-grey border-lighten-3 px-1 py-1 m-0">
+                    <div class="card-header border-0">
+                        <div class="card-title text-center">
+                            <img src="/img/networkLogo.jpeg" style="width:200px;" alt="branding logo">
+                        </div>
+                        <p class="card-subtitle line-on-side text-muted text-center font-small-3 mx-2 my-1">
+                            <span>
+                              Contact US 
+                            </span>
+                        </p>
+
+                      
+                    </div>
+                   
+                        <div class="card-body">
+                            <div class="content-body">
+                                <div class="card">
+                                    <div class="card-content collapse show">
+                                        <div class="card-body">
+
+                                            
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        
+
+                                                        @Html.Raw(Model.Content)
+
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div></div></section>
